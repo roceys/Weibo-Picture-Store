@@ -61,8 +61,10 @@ export class SectionTable {
             this.domNodes.inputHTML.value = item.HTML;
             this.domNodes.inputUBB.value = item.UBB;
             this.domNodes.inputMarkdown.value = item.Markdown;
-            if (item.fullPath) {
-                this.domNodes.imageHolder.title = `图片目录：${item.fullPath}`;
+            if (item.fullDirectoryPath) {
+                this.domNodes.imageHolder.title = `图片目录：${item.fullDirectoryPath}`;
+            } else if (item.blob.name) {
+                this.domNodes.imageHolder.title = `图片文件：${item.blob.name}`;
             }
             return true;
         } else {
@@ -82,7 +84,7 @@ export class SectionTable {
         const html = `
             <section>
                 <div class="holder-wrapper">
-                    <div class="image-holder" title="上传图片到微博相册"></div>
+                    <div class="image-holder" title="点击上传图片到微博相册"></div>
                 </div>
                 <div class="table-wrapper">
                     <table width="100%">

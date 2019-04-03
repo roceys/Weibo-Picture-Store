@@ -19,6 +19,32 @@
                     <input type="checkbox" value="auto_display_changelog" /> <span>通知我更新详情</span>
                 </label>
             </div>
+            <div>
+                <label title="必须同时启用微博图片水印，图片水印才会生效呦~">
+                    <input type="checkbox" value="weibo_inherited_watermark" /> <span>继承微博图片水印</span>
+                </label>
+            </div>
+            <h2>微博账户</h2>
+            <div>
+                <label title="账号/密码不会同步到任何服务器上">
+                    <input type="checkbox" value="allow_user_account" /> <span>使用账号和密码登录</span>
+                </label>
+                <fieldset disabled>
+                    <div>
+                        <label title="邮箱/手机号">
+                            <input spellcheck="false" type="text" placeholder="邮箱/手机号" id="username" />
+                        </label>
+                    </div>
+                    <div>
+                        <label title="请输入密码">
+                            <input spellcheck="false" type="password" placeholder="请输入密码" id="password" />
+                        </label>
+                    </div>
+                    <div>
+                        <label><input spellcheck="false" type="button" value="确认" id="confirm"/></label>
+                    </div>
+                </fieldset>
+            </div>
         </div>
         <script type="module" src="scripts/options.js"></script>
     </body>

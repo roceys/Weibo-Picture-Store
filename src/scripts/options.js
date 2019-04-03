@@ -4,30 +4,97 @@
  * found in the LICENSE file.
  */
 
-import { K_AUTO_DISPLAY_CHANGELOG, PConfig } from "./sharre/constant.js";
+import { K_AUTO_DISPLAY_CHANGELOG, K_WEIBO_ACCOUNT_DETAILS, K_WEIBO_INHERITED_WATERMARK } from "./sharre/constant.js";
+import { SharreM } from "./sharre/alphabet.js";
 
 const displayChangelog = document.querySelector(`input[value="auto_display_changelog"]`);
+const inheritedWatermark = document.querySelector(`input[value="weibo_inherited_watermark"]`);
+const allowUserAccount = document.querySelector(`input[value="allow_user_account"]`);
 
-chrome.storage.sync.get(
-    {
-        [K_AUTO_DISPLAY_CHANGELOG]: PConfig.defaultOptions.autoDisplayChangelog,
-    },
-    items => {
-        if (chrome.runtime.lastError) return;
-        displayChangelog.checked = Boolean(items[K_AUTO_DISPLAY_CHANGELOG]);
-    },
-);
+const fieldset = document.querySelector("fieldset");
+const confirm = document.getElementById("confirm");
+const username = document.getElementById("username");
+const password = document.getElementById("password");
 
-displayChangelog.addEventListener("click", e => {
-    const checked = e.target.checked;
-    chrome.storage.sync.set(
-        {
-            [K_AUTO_DISPLAY_CHANGELOG]: checked,
-        },
-        function() {
+function registerInputClickEventWithSyncStorage(input, key) {
+    input.addEventListener("click", e => {
+        const checked = e.target.checked;
+        chrome.storage.sync.set({ [key]: checked }, function() {
             if (chrome.runtime.lastError) {
-                displayChangelog.checked = !checked;
+                input.checked = !checked;
             }
+        });
+    });
+}
+
+displayChangelog.checked = Boolean(SharreM.genericMap.get(K_AUTO_DISPLAY_CHANGELOG));
+inheritedWatermark.checked = Boolean(SharreM.genericMap.get(K_WEIBO_INHERITED_WATERMARK));
+
+registerInputClickEventWithSyncStorage(displayChangelog, K_AUTO_DISPLAY_CHANGELOG);
+registerInputClickEventWithSyncStorage(inheritedWatermark, K_WEIBO_INHERITED_WATERMARK);
+
+username.value = SharreM.weiboMap.get("username");
+password.value = SharreM.weiboMap.get("password");
+
+if (SharreM.weiboMap.get("allowUserAccount")) {
+    allowUserAccount.checked = true;
+    fieldset.disabled = false;
+}
+
+allowUserAccount.addEventListener("click", e => {
+    const checked = e.target.checked;
+    chrome.storage.local.set(
+        {
+            [K_WEIBO_ACCOUNT_DETAILS]: {
+                username: username.value,
+                password: password.value,
+                allowUserAccount: checked,
+            },
+        },
+        () => {
+            if (chrome.runtime.lastError) {
+                allowUserAccount.checked = !checked;
+                return;
+            }
+            fieldset.disabled = !checked;
         },
     );
 });
+
+confirm.addEventListener("click", e => {
+    const details = {
+        username: username.value,
+        password: password.value,
+        allowUserAccount: allowUserAccount.checked,
+    };
+    chrome.storage.local.set(
+        {
+            [K_WEIBO_ACCOUNT_DETAILS]: details,
+        },
+        () => {
+            if (chrome.runtime.lastError) return;
+            checkoutWeiboAccount(details);
+        },
+    );
+});
+
+function checkoutWeiboAccount(details) {
+    SharreM.WeiboStatic.signInByUserAccount(details.username, details.password)
+        .then(() => {
+            chrome.notifications.create({
+                type: "basic",
+                iconUrl: chrome.i18n.getMessage("notify_icon"),
+                title: chrome.i18n.getMessage("info_title"),
+                message: "配置成功，当前账号已登录",
+            });
+        })
+        .catch(reason => {
+            chrome.notifications.create({
+                type: "basic",
+                iconUrl: chrome.i18n.getMessage("notify_icon"),
+                title: chrome.i18n.getMessage("info_title"),
+                message: "配置失败，请检查账号和密码是否正确",
+                contextMessage: (reason && reason.message) || "未知错误",
+            });
+        });
+}

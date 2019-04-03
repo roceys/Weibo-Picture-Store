@@ -13,13 +13,14 @@
 -   支持点选、拖拽、粘贴以及页面右键菜单上传图片到微博并同步到微相册
 -   支持拖拽上传文件夹中的图片文件
 -   支持 JPEG、PNG、GIF 三种图片格式
--   支持 BMP、WebP、ico 有损转换为 PNG
+-   支持 SVG、BMP、WebP、ico 有损转换为 PNG
 -   支持把 HTML5 视频的当前帧上传为 JPG 图像
 -   支持查看上传记录，简单的浏览及删除操作
 -   支持生成 URL、HTML、UBB、Markdown 四种格式
 -   支持单条、多条模式的复制操作
 -   支持选择协议（http、https 和相对协议）
 -   支持三种固定裁剪尺寸和用户自定义尺寸
+-   支持使用微博账号和密码自动登录
 
 ## Instruction
 
@@ -27,7 +28,7 @@
 
 ![](screenshot/chrome-notify.jpg)
 
-上图展示的是扩展中常用的提示，一般出现在主屏幕的右下角。通常在一定时间后会自动消失，但是有一种提示框需要达到特定条件才会消失。比如：检测到微博没有登录的提示，需要用户按照提示操作或者手动点击关闭。
+上图展示的是扩展中常用的提示，一般出现在主屏幕的右下角，不同的操作系统显示上略有差异。
 
 ![](screenshot/popup.png)
 
@@ -41,7 +42,7 @@
 8. 隐藏菜单，用于放置反馈及其他信息（图中是菜单展开状态）
 9. 在 GitHub 上提交建议或者 BUG
 10. 通过电子邮件反馈问题（如果不方便使用 GitHub）
-11. [捐赠](http://www.hub.moe/blackboard/donate.html)支持一下
+11. [捐赠](https://www.hub.moe/blackboard/donate.html)支持一下
 12. 查看更新日志
 
 ![](screenshot/right-upload.jpg)
@@ -73,58 +74,32 @@
 
 上图是拖拽文件夹上传图片的示例。
 
-## Concept
+![](screenshot/options.png)
 
-> 如果你想使用好这个插件，那么理解这些词语很重要
+上图是选项设置，填写微博的账号和密码，可以在传图时自动登录到你的微博，这是可选的设置。默认情况下，使用浏览器中微博的 Cookies，如果你的微博没有登录，则会收到需要登录微博的提示。
 
-以下是针对弹窗模式的说明：
+## More
 
-弹窗模式最重要的一点是不区分单个文件和多个文件，它们被视为是一样的，那么上传流程如何工作呢？
-
-当上传流程进行中时，弹窗没有被锁死，这个时候用户依然可以继续添加图片，所有图片上传结束后，这些图片会和前面的图片一同出现的列表中。这对小水管用户传大图、多图非常实用。
-
-当上传流程结束后，用户选择继续上传图片，在这些图片上传成功时，已存在的列表会被清空，新的图片会被添加到列表中。如果用户误操作清空了列表，可以通过上传记录来获得以前图片的地址。
-
-微相册命中规则的说明：
-
--   拉取用户的前 100 个相册
--   找出所有含有特征描述的相册并按照创建时间的先后顺序排序
--   取最近创建的一个相册作为目标相册
-
-如果上面的步骤没有查找到指定的相册，并且用户当前的相册总数小于 100，那么创建供此插件传图使用的相册（这个相册是属于用户私有，好友不可见的）。
-
-以上条件都不符合，则不会同步图片。
-
-## Additional
-
-已知微博图片的自定义裁剪格式：
-
--   `large` -> 原始图片
--   `mw690` -> 最大 690 像素宽度裁剪
--   `thumbnail` -> 缩略图
--   `small` -> 小图
--   `square` -> 80 像素正方形裁剪
--   `thumb150` -> 150 像素正方形裁剪
--   `thumb180` -> 180 像素正方形裁剪
--   `thumb300` -> 300 像素正方形裁剪
--   `orj180` -> 180 像素宽度原比例缩放
--   `orj360` -> 360 像素宽度原比例缩放
--   `woriginal` -> 原图，和 large 一样
--   `bmiddle` -> 440 像素宽度原比例缩放
--   `wap50` -> 50 像素宽度原比例缩放
--   `wap180` -> 180 像素宽度原比例缩放
--   `wap240` -> 240 像素宽度原比例缩放
--   `wap360` -> 360 像素宽度原比例缩放
--   `wap720` -> 720 像素宽度原比例缩放
--   `wap800` -> 800 像素宽度原比例缩放
--   `crop.x.y.x1.y1.w` -> 自定义矩形裁剪，其中 x, y 表示左上角坐标，x1, y1 表示右下角坐标，w 是宽度
+-   [深入了解概念](docs/conception.md)
+-   [自定义剪裁格式](docs/custom-clipsize.md)
+-   [获得/生成 CRX 文件](docs/get-crx-file.md)
+-   [已知问题](docs/known-issues.md)
+-   [项目结构预览(开发者文档)](docs/project-structure.md)
+-   [基础架构预览(开发者文档)](docs/architecture.md)
 
 ## FAQ
 
 -   图片上传到哪儿了？
     -   上传到用户的微博上了
+-   在扩展中填写微博账号和密码，这样做是否安全？
+    -   你填写的账号和密码存在本地，不会上传到任何服务器上
+-   我的常用微博账号是**A**，我可以在扩展中填写另一个账号**B**吗？
+    -   可以但不推荐，因为一个浏览器同时只能有一个微博的登录状态，在使用**B**时，**A**可能会被强制登出
+    -   若有同时登录两个账户的需求，请使用 [Chrome 的多用户模式](https://support.google.com/chrome/answer/2364824?hl=zh-Hans)来避免上述这种情况
 -   可以上传的最大图片大小是多少？
     -   目前是 20MB
+-   如何设置微博图片水印？
+    -   请参考[官方教程](https://weibo.com/ttarticle/p/show?id=2309404137032606682721)设置微博图片水印
 -   如何管理已上传的图片？
     -   上传记录或者微相册均可以管理
 -   如何删除已上传的图片？
@@ -143,12 +118,16 @@
     -   前往[微相册](http://photo.weibo.com)清理陈旧的相册即可
 -   为什么通过复制粘贴的方式上传 GIF 会变成静态图片？
     -   在浏览器或操作系统中复制 GIF 时，只有其中一帧被复制到了剪切板，因此上传后会变成静态图片
--   Chrome Canary 上有些莫名其妙的问题？
-    -   建议使用正式版，Canary 只作为测试用，不提供完整支持
 
 ## Thanks
 
--   [JetBrains IDEs](https://www.jetbrains.com/)
+-   [JetBrains IDEs](https://www.jetbrains.com/?from=Weibo-Picture-Store)
 -   [Font Awesome](https://fontawesome.com/)
 -   [Base64 encode/decode](https://github.com/beatgammit/base64-js)
 -   [@Suxiaogang](https://github.com/Suxiaogang/WeiboPicBed/)（参考了某些交互设计）
+
+<p align="center">
+  <a href="https://www.jetbrains.com/?from=Weibo-Picture-Store" title="前往官网了解JetBrains出品的IDEs">
+    <img src="scratches/jetbrains.svg" width="128" alt="JetBrains logo">
+  </a>
+</p>
